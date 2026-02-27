@@ -1,0 +1,50 @@
+### IntelliJ IDEA ###
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+.kotlin
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+# --- IntelliJ IDEA ---
+.idea/
+*.iml
+gen/
+
+# --- Compiled files ---
+*.class
+build/
+dist/
+
+# --- OS generated files ---
+Thumbs.db
+
+# --- Log files ---
+*.log
+
+# CRITICAL: Do NOT ignore the /lib folder.
+# Since we are using Apache Ant, our .jar dependencies must stay in the repo.
+!lib/
