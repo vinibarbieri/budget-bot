@@ -9,6 +9,7 @@ import domain.CategoryType;
 import domain.Transaction;
 
 import java.math.BigDecimal;
+import java.time.YearMonth;
 import java.util.List;
 
 public class BudgetService {
@@ -45,10 +46,27 @@ public class BudgetService {
                 messageSender.sendMessage(userId, "Warning: You have exceeded your budget for " + category.getName() + "!");
             }
         }
-
+        // Isolate bot logic look @calculateRemainingBudget
         messageSender.sendMessage(userId, "Transaction recorded successfully.");
 
-        budgetRepo.save(currentBudget);
+    }
+
+    public void createMonthlyBudget(Long userId, Long categoryId, Integer month, Integer year, BigDecimal limitAmount) {
+
+        try {
+            if (limitAmount.floatValue() <= 0 || month <= 0 || year <= 2025) {
+                throw new IllegalArgumentException("Invalid arguments: Verify amount limit, month and year");
+            }
+
+            Budget newBudget = new Budget(categoryId, month, year, limitAmount);
+            budgetRepo.save(newBudget);
+            // Isolate bot logic look @calculateRemainingBudget
+            messageSender.sendMessage(userId, limitAmount + "budget created for " +month + "/" +year);
+
+        } catch (IllegalArgumentException e) {
+            messageSender.sendMessage(userId, e.getMessage());
+        }
+
     }
 
     public void getBalance(Long userId) {
@@ -58,7 +76,14 @@ public class BudgetService {
         for (Transaction currentTransaction : allTransactions) {
             balance = balance.add(currentTransaction.getAmount());
         }
-
+        // Isolate bot logic look @calculateRemainingBudget
         messageSender.sendMessage(userId, "Your current balance is: " + balance);
+    }
+
+    public BigDecimal calculateRemainingBudget(Long userId, Category category, YearMonth period) {
+        BigDecimal monthlySpentAmount = transactionsRepo.calculateSpentAmount(category.getId(), period);
+        BigDecimal monthlyBudget = budgetRepo.monthlyBudget(category.getId(), period);
+
+        return monthlyBudget.subtract(monthlySpentAmount);
     }
 }
