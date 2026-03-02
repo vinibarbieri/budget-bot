@@ -94,4 +94,11 @@ public class TransactionsRepoImpl implements TransactionsRepo {
 
         return BigDecimal.ZERO;
     }
+
+    @Override
+    public BigDecimal calculateTotalBalance(Long userId){
+        // TODO: SELECT SUM(amount) FROM transactions WHERE user_id = userId
+
+    }
+
 }

@@ -15,4 +15,5 @@ public interface TransactionsRepo {
 
     BigDecimal calculateSpentAmount(Long categoryId, YearMonth period);
 
+    BigDecimal calculateTotalBalance(Long userId);
 }
