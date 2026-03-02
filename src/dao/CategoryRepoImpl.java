@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CategoryRepoImpl implements CategoryRepo {
 
@@ -71,5 +72,38 @@ public class CategoryRepoImpl implements CategoryRepo {
         }
 
         return activeCategories;
+    }
+
+    @Override
+    public Optional<Category> findByNameAndUser(String name, Long userId) {
+        String sql = "SELECT id, user_id, name, type, is_active, created_at " +
+                "FROM categories " +
+                "WHERE user_id = ? AND name = ? AND is_active = TRUE";
+
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, userId);
+            pstmt.setString(2, name);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Category category = new Category(
+                            rs.getLong("id"),
+                            rs.getLong("user_id"),
+                            rs.getString("name"),
+                            CategoryType.valueOf(rs.getString("type")),
+                            rs.getBoolean("is_active"),
+                            rs.getTimestamp("created_at")
+                    );
+
+                    return Optional.of(category);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching category by name", e);
+        }
+
+        return Optional.empty();
     }
 }
